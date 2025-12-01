@@ -488,13 +488,13 @@ def _uniffi_check_api_checksums(lib):
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_accept_welcome() != 44970:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    if lib.uniffi_mdk_uniffi_checksum_method_mdk_add_members() != 48219:
+    if lib.uniffi_mdk_uniffi_checksum_method_mdk_add_members() != 19089:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_create_group() != 56895:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_create_key_package_for_event() != 48232:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    if lib.uniffi_mdk_uniffi_checksum_method_mdk_create_message() != 41079:
+    if lib.uniffi_mdk_uniffi_checksum_method_mdk_create_message() != 58601:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_decline_welcome() != 58096:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
@@ -514,23 +514,23 @@ def _uniffi_check_api_checksums(lib):
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_get_welcome() != 25012:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    if lib.uniffi_mdk_uniffi_checksum_method_mdk_leave_group() != 20702:
+    if lib.uniffi_mdk_uniffi_checksum_method_mdk_leave_group() != 46166:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_merge_pending_commit() != 22201:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    if lib.uniffi_mdk_uniffi_checksum_method_mdk_parse_key_package() != 25544:
+    if lib.uniffi_mdk_uniffi_checksum_method_mdk_parse_key_package() != 41870:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_process_message() != 15589:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_process_welcome() != 34932:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    if lib.uniffi_mdk_uniffi_checksum_method_mdk_remove_members() != 46971:
+    if lib.uniffi_mdk_uniffi_checksum_method_mdk_remove_members() != 31926:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    if lib.uniffi_mdk_uniffi_checksum_method_mdk_self_update() != 2372:
+    if lib.uniffi_mdk_uniffi_checksum_method_mdk_self_update() != 48999:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     if lib.uniffi_mdk_uniffi_checksum_method_mdk_sync_group_metadata_from_mls() != 16922:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    if lib.uniffi_mdk_uniffi_checksum_method_mdk_update_group_data() != 28107:
+    if lib.uniffi_mdk_uniffi_checksum_method_mdk_update_group_data() != 32068:
         raise InternalError("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
 
 # A ctypes library to expose the extern-C FFI definitions.
@@ -865,6 +865,7 @@ _UniffiLib.uniffi_mdk_uniffi_fn_method_mdk_create_message.argtypes = (
     _UniffiRustBuffer,
     _UniffiRustBuffer,
     ctypes.c_uint16,
+    _UniffiRustBuffer,
     ctypes.POINTER(_UniffiRustCallStatus),
 )
 _UniffiLib.uniffi_mdk_uniffi_fn_method_mdk_create_message.restype = _UniffiRustBuffer
@@ -937,7 +938,7 @@ _UniffiLib.uniffi_mdk_uniffi_fn_method_mdk_parse_key_package.argtypes = (
     _UniffiRustBuffer,
     ctypes.POINTER(_UniffiRustCallStatus),
 )
-_UniffiLib.uniffi_mdk_uniffi_fn_method_mdk_parse_key_package.restype = None
+_UniffiLib.uniffi_mdk_uniffi_fn_method_mdk_parse_key_package.restype = _UniffiRustBuffer
 _UniffiLib.uniffi_mdk_uniffi_fn_method_mdk_process_message.argtypes = (
     ctypes.c_uint64,
     _UniffiRustBuffer,
@@ -1102,99 +1103,6 @@ class _UniffiFfiConverterString:
             builder.write(value.encode("utf-8"))
             return builder.finalize()
 
-class _UniffiFfiConverterSequenceString(_UniffiConverterRustBuffer):
-    @classmethod
-    def check_lower(cls, value):
-        for item in value:
-            _UniffiFfiConverterString.check_lower(item)
-
-    @classmethod
-    def write(cls, value, buf):
-        items = len(value)
-        buf.write_i32(items)
-        for item in value:
-            _UniffiFfiConverterString.write(item, buf)
-
-    @classmethod
-    def read(cls, buf):
-        count = buf.read_i32()
-        if count < 0:
-            raise InternalError("Unexpected negative sequence length")
-
-        return [
-            _UniffiFfiConverterString.read(buf) for i in range(count)
-        ]
-
-class _UniffiFfiConverterOptionalSequenceString(_UniffiConverterRustBuffer):
-    @classmethod
-    def check_lower(cls, value):
-        if value is not None:
-            _UniffiFfiConverterSequenceString.check_lower(value)
-
-    @classmethod
-    def write(cls, value, buf):
-        if value is None:
-            buf.write_u8(0)
-            return
-
-        buf.write_u8(1)
-        _UniffiFfiConverterSequenceString.write(value, buf)
-
-    @classmethod
-    def read(cls, buf):
-        flag = buf.read_u8()
-        if flag == 0:
-            return None
-        elif flag == 1:
-            return _UniffiFfiConverterSequenceString.read(buf)
-        else:
-            raise InternalError("Unexpected flag byte for optional type")
-
-@dataclass
-class AddMembersResult:
-    """
-    Result of adding members to a group
-"""
-    def __init__(self, *, evolution_event_json:str, welcome_rumors_json:typing.Optional[typing.List[str]], mls_group_id:str):
-        self.evolution_event_json = evolution_event_json
-        self.welcome_rumors_json = welcome_rumors_json
-        self.mls_group_id = mls_group_id
-        
-        
-
-    
-    def __str__(self):
-        return "AddMembersResult(evolution_event_json={}, welcome_rumors_json={}, mls_group_id={})".format(self.evolution_event_json, self.welcome_rumors_json, self.mls_group_id)
-    def __eq__(self, other):
-        if self.evolution_event_json != other.evolution_event_json:
-            return False
-        if self.welcome_rumors_json != other.welcome_rumors_json:
-            return False
-        if self.mls_group_id != other.mls_group_id:
-            return False
-        return True
-
-class _UniffiFfiConverterTypeAddMembersResult(_UniffiConverterRustBuffer):
-    @staticmethod
-    def read(buf):
-        return AddMembersResult(
-            evolution_event_json=_UniffiFfiConverterString.read(buf),
-            welcome_rumors_json=_UniffiFfiConverterOptionalSequenceString.read(buf),
-            mls_group_id=_UniffiFfiConverterString.read(buf),
-        )
-
-    @staticmethod
-    def check_lower(value):
-        _UniffiFfiConverterString.check_lower(value.evolution_event_json)
-        _UniffiFfiConverterOptionalSequenceString.check_lower(value.welcome_rumors_json)
-        _UniffiFfiConverterString.check_lower(value.mls_group_id)
-
-    @staticmethod
-    def write(value, buf):
-        _UniffiFfiConverterString.write(value.evolution_event_json, buf)
-        _UniffiFfiConverterOptionalSequenceString.write(value.welcome_rumors_json, buf)
-        _UniffiFfiConverterString.write(value.mls_group_id, buf)
-
 class _UniffiFfiConverterBytes(_UniffiConverterRustBuffer):
     @staticmethod
     def read(buf):
@@ -1239,6 +1147,29 @@ class _UniffiFfiConverterOptionalBytes(_UniffiConverterRustBuffer):
             return _UniffiFfiConverterBytes.read(buf)
         else:
             raise InternalError("Unexpected flag byte for optional type")
+
+class _UniffiFfiConverterSequenceString(_UniffiConverterRustBuffer):
+    @classmethod
+    def check_lower(cls, value):
+        for item in value:
+            _UniffiFfiConverterString.check_lower(item)
+
+    @classmethod
+    def write(cls, value, buf):
+        items = len(value)
+        buf.write_i32(items)
+        for item in value:
+            _UniffiFfiConverterString.write(item, buf)
+
+    @classmethod
+    def read(cls, buf):
+        count = buf.read_i32()
+        if count < 0:
+            raise InternalError("Unexpected negative sequence length")
+
+        return [
+            _UniffiFfiConverterString.read(buf) for i in range(count)
+        ]
 
 class _UniffiFfiConverterOptionalString(_UniffiConverterRustBuffer):
     @classmethod
@@ -1463,6 +1394,31 @@ class _UniffiFfiConverterOptionalOptionalBytes(_UniffiConverterRustBuffer):
             return None
         elif flag == 1:
             return _UniffiFfiConverterOptionalBytes.read(buf)
+        else:
+            raise InternalError("Unexpected flag byte for optional type")
+
+class _UniffiFfiConverterOptionalSequenceString(_UniffiConverterRustBuffer):
+    @classmethod
+    def check_lower(cls, value):
+        if value is not None:
+            _UniffiFfiConverterSequenceString.check_lower(value)
+
+    @classmethod
+    def write(cls, value, buf):
+        if value is None:
+            buf.write_u8(0)
+            return
+
+        buf.write_u8(1)
+        _UniffiFfiConverterSequenceString.write(value, buf)
+
+    @classmethod
+    def read(cls, buf):
+        flag = buf.read_u8()
+        if flag == 0:
+            return None
+        elif flag == 1:
+            return _UniffiFfiConverterSequenceString.read(buf)
         else:
             raise InternalError("Unexpected flag byte for optional type")
 
@@ -1856,6 +1812,51 @@ class _UniffiFfiConverterTypeMessage(_UniffiConverterRustBuffer):
         _UniffiFfiConverterString.write(value.state, buf)
 
 @dataclass
+class UpdateGroupResult:
+    """
+    Result of updating a group
+"""
+    def __init__(self, *, evolution_event_json:str, welcome_rumors_json:typing.Optional[typing.List[str]], mls_group_id:str):
+        self.evolution_event_json = evolution_event_json
+        self.welcome_rumors_json = welcome_rumors_json
+        self.mls_group_id = mls_group_id
+        
+        
+
+    
+    def __str__(self):
+        return "UpdateGroupResult(evolution_event_json={}, welcome_rumors_json={}, mls_group_id={})".format(self.evolution_event_json, self.welcome_rumors_json, self.mls_group_id)
+    def __eq__(self, other):
+        if self.evolution_event_json != other.evolution_event_json:
+            return False
+        if self.welcome_rumors_json != other.welcome_rumors_json:
+            return False
+        if self.mls_group_id != other.mls_group_id:
+            return False
+        return True
+
+class _UniffiFfiConverterTypeUpdateGroupResult(_UniffiConverterRustBuffer):
+    @staticmethod
+    def read(buf):
+        return UpdateGroupResult(
+            evolution_event_json=_UniffiFfiConverterString.read(buf),
+            welcome_rumors_json=_UniffiFfiConverterOptionalSequenceString.read(buf),
+            mls_group_id=_UniffiFfiConverterString.read(buf),
+        )
+
+    @staticmethod
+    def check_lower(value):
+        _UniffiFfiConverterString.check_lower(value.evolution_event_json)
+        _UniffiFfiConverterOptionalSequenceString.check_lower(value.welcome_rumors_json)
+        _UniffiFfiConverterString.check_lower(value.mls_group_id)
+
+    @staticmethod
+    def write(value, buf):
+        _UniffiFfiConverterString.write(value.evolution_event_json, buf)
+        _UniffiFfiConverterOptionalSequenceString.write(value.welcome_rumors_json, buf)
+        _UniffiFfiConverterString.write(value.mls_group_id, buf)
+
+@dataclass
 class Welcome:
     """
     Welcome representation
@@ -2144,7 +2145,7 @@ class ProcessMessageResult:
         A proposal message (add/remove member proposal)
 """
         
-        def __init__(self, result:AddMembersResult):
+        def __init__(self, result:UpdateGroupResult):
             self.result = result
             
             """
@@ -2298,7 +2299,7 @@ class _UniffiFfiConverterTypeProcessMessageResult(_UniffiConverterRustBuffer):
             )
         if variant == 2:
             return ProcessMessageResult.PROPOSAL(
-                _UniffiFfiConverterTypeAddMembersResult.read(buf),
+                _UniffiFfiConverterTypeUpdateGroupResult.read(buf),
             )
         if variant == 3:
             return ProcessMessageResult.EXTERNAL_JOIN_PROPOSAL(
@@ -2320,7 +2321,7 @@ class _UniffiFfiConverterTypeProcessMessageResult(_UniffiConverterRustBuffer):
             _UniffiFfiConverterTypeMessage.check_lower(value.message)
             return
         if value.is_PROPOSAL():
-            _UniffiFfiConverterTypeAddMembersResult.check_lower(value.result)
+            _UniffiFfiConverterTypeUpdateGroupResult.check_lower(value.result)
             return
         if value.is_EXTERNAL_JOIN_PROPOSAL():
             _UniffiFfiConverterString.check_lower(value.mls_group_id)
@@ -2340,7 +2341,7 @@ class _UniffiFfiConverterTypeProcessMessageResult(_UniffiConverterRustBuffer):
             _UniffiFfiConverterTypeMessage.write(value.message, buf)
         if value.is_PROPOSAL():
             buf.write_i32(2)
-            _UniffiFfiConverterTypeAddMembersResult.write(value.result, buf)
+            _UniffiFfiConverterTypeUpdateGroupResult.write(value.result, buf)
         if value.is_EXTERNAL_JOIN_PROPOSAL():
             buf.write_i32(3)
             _UniffiFfiConverterString.write(value.mls_group_id, buf)
@@ -2352,6 +2353,31 @@ class _UniffiFfiConverterTypeProcessMessageResult(_UniffiConverterRustBuffer):
             _UniffiFfiConverterString.write(value.mls_group_id, buf)
 
 
+
+class _UniffiFfiConverterOptionalSequenceSequenceString(_UniffiConverterRustBuffer):
+    @classmethod
+    def check_lower(cls, value):
+        if value is not None:
+            _UniffiFfiConverterSequenceSequenceString.check_lower(value)
+
+    @classmethod
+    def write(cls, value, buf):
+        if value is None:
+            buf.write_u8(0)
+            return
+
+        buf.write_u8(1)
+        _UniffiFfiConverterSequenceSequenceString.write(value, buf)
+
+    @classmethod
+    def read(cls, buf):
+        flag = buf.read_u8()
+        if flag == 0:
+            return None
+        elif flag == 1:
+            return _UniffiFfiConverterSequenceSequenceString.read(buf)
+        else:
+            raise InternalError("Unexpected flag byte for optional type")
 
 class _UniffiFfiConverterOptionalTypeGroup(_UniffiConverterRustBuffer):
     @classmethod
@@ -2508,7 +2534,7 @@ class MdkProtocol(typing.Protocol):
         Accept a welcome message
 """
         raise NotImplementedError
-    def add_members(self, mls_group_id: str,key_package_events_json: typing.List[str]) -> AddMembersResult:
+    def add_members(self, mls_group_id: str,key_package_events_json: typing.List[str]) -> UpdateGroupResult:
         """
         Add members to a group
 """
@@ -2523,7 +2549,7 @@ class MdkProtocol(typing.Protocol):
         Create a key package for a Nostr event
 """
         raise NotImplementedError
-    def create_message(self, mls_group_id: str,sender_public_key: str,content: str,kind: int) -> str:
+    def create_message(self, mls_group_id: str,sender_public_key: str,content: str,kind: int,tags: typing.Optional[typing.List[typing.List[str]]]) -> str:
         """
         Create a message in a group
 """
@@ -2573,7 +2599,7 @@ class MdkProtocol(typing.Protocol):
         Get a welcome by event ID
 """
         raise NotImplementedError
-    def leave_group(self, mls_group_id: str) -> AddMembersResult:
+    def leave_group(self, mls_group_id: str) -> UpdateGroupResult:
         """
         Create a proposal to leave the group
 """
@@ -2583,7 +2609,7 @@ class MdkProtocol(typing.Protocol):
         Merge pending commit for a group
 """
         raise NotImplementedError
-    def parse_key_package(self, event_json: str) -> None:
+    def parse_key_package(self, event_json: str) -> str:
         """
         Parse a key package from a Nostr event
 """
@@ -2598,12 +2624,12 @@ class MdkProtocol(typing.Protocol):
         Process a welcome message
 """
         raise NotImplementedError
-    def remove_members(self, mls_group_id: str,member_public_keys: typing.List[str]) -> AddMembersResult:
+    def remove_members(self, mls_group_id: str,member_public_keys: typing.List[str]) -> UpdateGroupResult:
         """
         Remove members from a group
 """
         raise NotImplementedError
-    def self_update(self, mls_group_id: str) -> AddMembersResult:
+    def self_update(self, mls_group_id: str) -> UpdateGroupResult:
         """
         Update the current member's leaf node in an MLS group
 """
@@ -2613,7 +2639,7 @@ class MdkProtocol(typing.Protocol):
         Sync group metadata from MLS
 """
         raise NotImplementedError
-    def update_group_data(self, mls_group_id: str,update: GroupDataUpdate) -> AddMembersResult:
+    def update_group_data(self, mls_group_id: str,update: GroupDataUpdate) -> UpdateGroupResult:
         """
         Update group data (name, description, image, relays, admins)
 """
@@ -2664,7 +2690,7 @@ class Mdk(MdkProtocol):
             *_uniffi_lowered_args,
         )
         return _uniffi_lift_return(_uniffi_ffi_result)
-    def add_members(self, mls_group_id: str,key_package_events_json: typing.List[str]) -> AddMembersResult:
+    def add_members(self, mls_group_id: str,key_package_events_json: typing.List[str]) -> UpdateGroupResult:
         """
         Add members to a group
 """
@@ -2677,7 +2703,7 @@ class Mdk(MdkProtocol):
             _UniffiFfiConverterString.lower(mls_group_id),
             _UniffiFfiConverterSequenceString.lower(key_package_events_json),
         )
-        _uniffi_lift_return = _UniffiFfiConverterTypeAddMembersResult.lift
+        _uniffi_lift_return = _UniffiFfiConverterTypeUpdateGroupResult.lift
         _uniffi_error_converter = _UniffiFfiConverterTypeMdkUniffiError
         _uniffi_ffi_result = _uniffi_rust_call_with_error(
             _uniffi_error_converter,
@@ -2739,7 +2765,7 @@ class Mdk(MdkProtocol):
             *_uniffi_lowered_args,
         )
         return _uniffi_lift_return(_uniffi_ffi_result)
-    def create_message(self, mls_group_id: str,sender_public_key: str,content: str,kind: int) -> str:
+    def create_message(self, mls_group_id: str,sender_public_key: str,content: str,kind: int,tags: typing.Optional[typing.List[typing.List[str]]]) -> str:
         """
         Create a message in a group
 """
@@ -2751,12 +2777,15 @@ class Mdk(MdkProtocol):
         _UniffiFfiConverterString.check_lower(content)
         
         _UniffiFfiConverterUInt16.check_lower(kind)
+        
+        _UniffiFfiConverterOptionalSequenceSequenceString.check_lower(tags)
         _uniffi_lowered_args = (
             self._uniffi_clone_handle(),
             _UniffiFfiConverterString.lower(mls_group_id),
             _UniffiFfiConverterString.lower(sender_public_key),
             _UniffiFfiConverterString.lower(content),
             _UniffiFfiConverterUInt16.lower(kind),
+            _UniffiFfiConverterOptionalSequenceSequenceString.lower(tags),
         )
         _uniffi_lift_return = _UniffiFfiConverterString.lift
         _uniffi_error_converter = _UniffiFfiConverterTypeMdkUniffiError
@@ -2922,7 +2951,7 @@ class Mdk(MdkProtocol):
             *_uniffi_lowered_args,
         )
         return _uniffi_lift_return(_uniffi_ffi_result)
-    def leave_group(self, mls_group_id: str) -> AddMembersResult:
+    def leave_group(self, mls_group_id: str) -> UpdateGroupResult:
         """
         Create a proposal to leave the group
 """
@@ -2932,7 +2961,7 @@ class Mdk(MdkProtocol):
             self._uniffi_clone_handle(),
             _UniffiFfiConverterString.lower(mls_group_id),
         )
-        _uniffi_lift_return = _UniffiFfiConverterTypeAddMembersResult.lift
+        _uniffi_lift_return = _UniffiFfiConverterTypeUpdateGroupResult.lift
         _uniffi_error_converter = _UniffiFfiConverterTypeMdkUniffiError
         _uniffi_ffi_result = _uniffi_rust_call_with_error(
             _uniffi_error_converter,
@@ -2958,7 +2987,7 @@ class Mdk(MdkProtocol):
             *_uniffi_lowered_args,
         )
         return _uniffi_lift_return(_uniffi_ffi_result)
-    def parse_key_package(self, event_json: str) -> None:
+    def parse_key_package(self, event_json: str) -> str:
         """
         Parse a key package from a Nostr event
 """
@@ -2968,7 +2997,7 @@ class Mdk(MdkProtocol):
             self._uniffi_clone_handle(),
             _UniffiFfiConverterString.lower(event_json),
         )
-        _uniffi_lift_return = lambda val: None
+        _uniffi_lift_return = _UniffiFfiConverterString.lift
         _uniffi_error_converter = _UniffiFfiConverterTypeMdkUniffiError
         _uniffi_ffi_result = _uniffi_rust_call_with_error(
             _uniffi_error_converter,
@@ -3015,7 +3044,7 @@ class Mdk(MdkProtocol):
             *_uniffi_lowered_args,
         )
         return _uniffi_lift_return(_uniffi_ffi_result)
-    def remove_members(self, mls_group_id: str,member_public_keys: typing.List[str]) -> AddMembersResult:
+    def remove_members(self, mls_group_id: str,member_public_keys: typing.List[str]) -> UpdateGroupResult:
         """
         Remove members from a group
 """
@@ -3028,7 +3057,7 @@ class Mdk(MdkProtocol):
             _UniffiFfiConverterString.lower(mls_group_id),
             _UniffiFfiConverterSequenceString.lower(member_public_keys),
         )
-        _uniffi_lift_return = _UniffiFfiConverterTypeAddMembersResult.lift
+        _uniffi_lift_return = _UniffiFfiConverterTypeUpdateGroupResult.lift
         _uniffi_error_converter = _UniffiFfiConverterTypeMdkUniffiError
         _uniffi_ffi_result = _uniffi_rust_call_with_error(
             _uniffi_error_converter,
@@ -3036,7 +3065,7 @@ class Mdk(MdkProtocol):
             *_uniffi_lowered_args,
         )
         return _uniffi_lift_return(_uniffi_ffi_result)
-    def self_update(self, mls_group_id: str) -> AddMembersResult:
+    def self_update(self, mls_group_id: str) -> UpdateGroupResult:
         """
         Update the current member's leaf node in an MLS group
 """
@@ -3046,7 +3075,7 @@ class Mdk(MdkProtocol):
             self._uniffi_clone_handle(),
             _UniffiFfiConverterString.lower(mls_group_id),
         )
-        _uniffi_lift_return = _UniffiFfiConverterTypeAddMembersResult.lift
+        _uniffi_lift_return = _UniffiFfiConverterTypeUpdateGroupResult.lift
         _uniffi_error_converter = _UniffiFfiConverterTypeMdkUniffiError
         _uniffi_ffi_result = _uniffi_rust_call_with_error(
             _uniffi_error_converter,
@@ -3072,7 +3101,7 @@ class Mdk(MdkProtocol):
             *_uniffi_lowered_args,
         )
         return _uniffi_lift_return(_uniffi_ffi_result)
-    def update_group_data(self, mls_group_id: str,update: GroupDataUpdate) -> AddMembersResult:
+    def update_group_data(self, mls_group_id: str,update: GroupDataUpdate) -> UpdateGroupResult:
         """
         Update group data (name, description, image, relays, admins)
 """
@@ -3085,7 +3114,7 @@ class Mdk(MdkProtocol):
             _UniffiFfiConverterString.lower(mls_group_id),
             _UniffiFfiConverterTypeGroupDataUpdate.lower(update),
         )
-        _uniffi_lift_return = _UniffiFfiConverterTypeAddMembersResult.lift
+        _uniffi_lift_return = _UniffiFfiConverterTypeUpdateGroupResult.lift
         _uniffi_error_converter = _UniffiFfiConverterTypeMdkUniffiError
         _uniffi_ffi_result = _uniffi_rust_call_with_error(
             _uniffi_error_converter,
@@ -3217,7 +3246,6 @@ __all__ = [
     "InternalError",
     "MdkUniffiError",
     "ProcessMessageResult",
-    "AddMembersResult",
     "Group",
     "CreateGroupResult",
     "GroupDataUpdate",
@@ -3225,6 +3253,7 @@ __all__ = [
     "GroupImageUpload",
     "KeyPackageResult",
     "Message",
+    "UpdateGroupResult",
     "Welcome",
     "decrypt_group_image",
     "derive_upload_keypair",
